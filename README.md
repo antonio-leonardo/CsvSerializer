@@ -1,10 +1,14 @@
 # CSV Serializer
 
-C# class giving a simplest with performance serializer functionalities to manipulate CSV strings; several test cases were executed in order to treat the particularities of a sequence of CSV characters; in this publication, is considered stable, it is implemented in productive environments with large scale of data generated or consumed in CSV daily; but, it is not ruling out possible faults, if it occurs, you can tell me by exposing the test case used. This 'CsvSerializer' class enjoy best pratices of Design Patterns result in a powerful serialization and deserialization functionality. Here are examples of using the 'CsvSerializer':
+C# class giving a simplest with performance serializer functionalities to manipulate CSV strings; several test cases were executed in order to treat the particularities of a sequence of CSV characters; in this publication, is considered stable, it is implemented in productive environments with large scale of data generated or consumed in CSV daily; but, it is not ruling out possible faults, if it occurs, you can tell me by exposing the test case used.
+
+Specifications: This 'CsvSerializer' class enjoy best pratices of Design Patterns result in a powerful CSV serialization and deserialization functionality, giving to Developer other data sctructure options like [System.Data.DataTable](https://docs.microsoft.com/en-us/dotnet/api/system.data.datatable) or a custom C# Plain Old CLR Object (Entity class) with capacity to define column name and order exihbition.
+
+Bellow are examples of using the 'CsvSerializer':
 
 ## 1) Serialize
 
-#### 1.1) Using a POCO (Plain Old CLR Objects) class, with native .NET [DataMemberAtribute](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.serialization.datamemberattribute.-ctor?view=netframework-4.7.2) (attribute is not mandatory):
+#### 1.1) Using a POCO (Plain Old CLR Objects) class, with native .NET [DataMemberAtribute](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.serialization.datamemberattribute) (attribute is not mandatory):
 ```cs
 public class ExampleModel
 {
@@ -85,7 +89,7 @@ File.WriteAllText(@"\\path\to\save\file.csv", csvSerialized, Encoding.UTF8);
 
 #### 2.1) The developer may consume any '*.csv*' file by sugestted instruction:
 ```cs
-string csvToDeserialize = File.ReadAllText(fileLocation);
+string csvToDeserialize = File.ReadAllText(@"\\path\to\read\file.csv");
 ```
 
 #### 2.2) And, if dont know the data column arrange, may populate a DataTable objet:
@@ -95,8 +99,8 @@ DataTable dtDeserialized = CsvSerializer.Deserialize(csvToDeserialize);
 
 #### 2.2) Or populate a collection of Entity class (like array or list):
 ```cs
-ExampleModel[] arrayCollection = CsvSerializer<ExampleModel>.Deserialize(csv).ToArray();
-List<ExampleModel> listCollection = CsvSerializer<ExampleModel>.Deserialize(csv).ToList();
+ExampleModel[] arrayCollection = CsvSerializer<ExampleModel>.Deserialize(csvToDeserialize).ToArray();
+List<ExampleModel> listCollection = CsvSerializer<ExampleModel>.Deserialize(csvToDeserialize).ToList();
 ```
 ----------------------
 ## License
