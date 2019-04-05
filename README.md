@@ -2,7 +2,7 @@
 
 This C# class giving a simplest way with performance serializer functionalities to manipulate CSV strings; several test cases were executed in order to treat the particularities of a sequence of CSV characters; in this publication, is considered stable, it is implemented in productive environments with large scale of data generated or consumed in CSV daily; but, it is not ruling out possible faults, if it occurs, you can tell me by exposing the test case used.
 
-Specifications: This 'CsvSerializer' class enjoy best pratices of Design Patterns result in a powerful CSV serialization and deserialization functionality, giving to Developer other data sctructure options like [System.Data.DataTable](https://docs.microsoft.com/en-us/dotnet/api/system.data.datatable) or a custom C# Plain Old CLR Object (Entity class) with capacity to define column name and order exihbition.
+Specifications: This 'CsvSerializer' class enjoy best pratices of Design Patterns result in a powerful CSV serialization and deserialization functionality, giving to Developer other data sctructure options like [DataTable](https://docs.microsoft.com/en-us/dotnet/api/system.data.datatable) object or a custom C# Plain Old CLR Object (Entity class) with capacity to define column name and order exihbition.
 
 Bellow are examples of using the 'CsvSerializer':
 
