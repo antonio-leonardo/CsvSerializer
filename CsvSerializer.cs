@@ -32,7 +32,7 @@ namespace CsvSerialization
     }
 
     /// <summary>
-    /// Concrete class with DataRow class implementation
+    /// Concrete partial class with DataRow class implementation
     /// </summary>
     public sealed partial class CsvSerializer : CsvSerializerAbstraction<DataRow>
     {
@@ -46,10 +46,10 @@ namespace CsvSerialization
         #region ' Serialize '
 
         /// <summary>
-        /// 
+        /// Public method to return the result of string serialized in CSV format
         /// </summary>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <param name="collection">Datatable with data array to be serialized</param>
+        /// <returns>System.String</returns>
         public static string Serialize(DataTable collection)
         {
             StringBuilder sbColumns = new StringBuilder();
@@ -69,10 +69,10 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// Overriden method with all instructions to perform serialization from DataTable
         /// </summary>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <param name="collection">Array of DataRows</param>
+        /// <returns>System.String</returns>
         protected override string CustomSerialize(params DataRow[] collection)
         {
             StringBuilder sbRows = new StringBuilder();
@@ -118,17 +118,17 @@ namespace CsvSerialization
         #region ' Deserialize '
 
         /// <summary>
-        /// 
+        /// Public method to return a DataTable from string CSV
         /// </summary>
         /// <param name="csvString"></param>
-        /// <returns></returns>
+        /// <returns>System.Data.DataTable</returns>
         public static DataTable Deserialize(string csvString)
         {
             return (new CsvSerializer()).CustomDeserialize(csvString).ToArray().CopyToDataTable<DataRow>();
         }
 
         /// <summary>
-        /// 
+        /// Overriden method to execute performance deserialization from string CSV
         /// </summary>
         /// <param name="csvString"></param>
         /// <returns></returns>
@@ -145,10 +145,10 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// Private method to make iteration on data rows of string, by yield looping
         /// </summary>
-        /// <param name="dt"></param>
-        /// <param name="csvLines"></param>
+        /// <param name="dt">Defined parent scope DataTable</param>
+        /// <param name="csvLines">Array that represents rows of CSV file</param>
         /// <returns></returns>
         private IEnumerable<DataRow> GetArrayOfDataTableRows(DataTable dt, params string[] csvLines)
         {
@@ -174,7 +174,7 @@ namespace CsvSerialization
     }
 
     /// <summary>
-    /// 
+    /// Concrete partial class with Generic class definition
     /// </summary>
     public sealed partial class CsvSerializer<TEntity> : CsvSerializerAbstraction<TEntity>
         where TEntity : class
@@ -189,32 +189,31 @@ namespace CsvSerialization
         #region ' Serialize '
 
         /// <summary>
-        /// 
+        /// Public method to return the result of string serialized in CSV format
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <typeparam name="TEntity">Generic that represents the entity collection</typeparam>
+        /// <param name="collection">Datatable with data array to be serialized</param>
+        /// <returns>System.String</returns>
         public static string Serialize(List<TEntity> collection)
         {
             return Serialize(collection.ToArray());
         }
 
         /// <summary>
-        /// 
+        /// Overloaded method with all instructions to perform serialization from DataTable
         /// </summary>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <param name="collection">Array of DataRows</param>
+        /// <returns>System.String</returns>
         public static string Serialize(params TEntity[] collection)
         {
             return (new CsvSerializer<TEntity>()).CustomSerialize(collection);
         }
 
         /// <summary>
-        /// 
+        /// Overriden method with all instructions to perform serialization from DataTable
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <param name="collection">Array of Generic definition</param>
+        /// <returns>System.String</returns>
         protected override string CustomSerialize(params TEntity[] collection)
         {
             StringBuilder sbColumns = new StringBuilder();
@@ -232,11 +231,11 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// This method mounts all CSV columns based on CSV specifications
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="sbColumns"></param>
-        /// <param name="pairs"></param>
+        /// <typeparam name="TEntity">Defined Generic</typeparam>
+        /// <param name="sbColumns">StringBUilder with correctly string concats</param>
+        /// <param name="pairs">Tuple that represents parity of the entity property with this respective Attribute</param>
         private void MountCsvColumns(ref StringBuilder sbColumns, params KeyValuePair<PropertyInfo, DataMemberAttribute>[] pairs)
         {
             for (int i = 0; i < pairs.Length; i++)
@@ -253,12 +252,12 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// This method mounts all CSV rows based on CSV specifications
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="sbRows"></param>
-        /// <param name="obj"></param>
-        /// <param name="pairs"></param>
+        /// <typeparam name="TEntity">Defined Generic</typeparam>
+        /// <param name="sbRows">StringBUilder with correctly string concats</param>
+        /// <param name="obj">The generic object represents a CSV line row</param>
+        /// <param name="pairs">Parity that represents property and attribute</param>
         private void MountCsvRows(ref StringBuilder sbRows, TEntity obj, params KeyValuePair<PropertyInfo, DataMemberAttribute>[] pairs)
         {
             for (int i = 0; i < pairs.Length; i++)
@@ -279,11 +278,11 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// Validator to check if contais a property on array of collected properties
         /// </summary>
-        /// <param name="property"></param>
-        /// <param name="propsWithoutError"></param>
-        /// <returns></returns>
+        /// <param name="property">class property</param>
+        /// <param name="propsWithoutError">properties without error</param>
+        /// <returns>System.Boolean</returns>
         private bool ContainsPropertyInPropsWithoutExclude(PropertyInfo property, List<PropertyInfo> propsWithoutError)
         {
             bool result = false;
@@ -298,11 +297,11 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// Mount exception phrase and corresponding error columns
         /// </summary>
-        /// <param name="ordered"></param>
-        /// <param name="properties"></param>
-        /// <returns></returns>
+        /// <param name="ordered">Ordered collection of attributes</param>
+        /// <param name="properties">Array of properties</param>
+        /// <returns>System.String</returns>
         private string MountInnerExcetionMessage(List<DataMemberAttribute> ordered, params PropertyInfo[] properties)
         {
             StringBuilder sb = new StringBuilder();
@@ -332,11 +331,11 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// Capture the DataMember Attribute object collection by properties iteraction
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <typeparam name="TEntity">Defined generic</typeparam>
+        /// <param name="type">Type collected from generic type</param>
+        /// <returns>KeyValuePair Collection</returns>
         private IEnumerable<KeyValuePair<int, DataMemberAttribute>> GetAttributesResult(Type type)
         {
             PropertyInfo[] properties = type.GetProperties();
@@ -368,11 +367,11 @@ namespace CsvSerialization
         }
 
         /// <summary>
-        /// 
+        /// Capture the properties collection by properties iteraction
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <typeparam name="TEntity">Defined generic</typeparam>
+        /// <param name="type">Type collected from generic type</param>
+        /// <returns>KeyValuePair Collection</returns>
         private IEnumerable<KeyValuePair<PropertyInfo, DataMemberAttribute>> GetElementsResult(Type type)
         {
             //TO DO: Alterar para internal
@@ -391,21 +390,21 @@ namespace CsvSerialization
         #region ' Deserialize '
 
         /// <summary>
-        /// 
+        /// Public method to give collection result from Deserialization
         /// </summary>
-        /// <param name="csvString"></param>
-        /// <returns></returns>
+        /// <param name="csvString">string with read CSV</param>
+        /// <returns>Collection of Generic</returns>
         public static IEnumerable<TEntity> Deserialize(string csvString)
         {
             return (new CsvSerializer<TEntity>()).CustomDeserialize(csvString);
         }
 
         /// <summary>
-        /// 
+        /// Overriden method to implements analisys throwing all generic type properties
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="csvString"></param>
-        /// <returns></returns>
+        /// <typeparam name="TEntity">Defined generic</typeparam>
+        /// <param name="csvString">Csv on string format</param>
+        /// <returns>Collection of Generic</returns>
         protected override IEnumerable<TEntity> CustomDeserialize(string csvString)
         {
             string[] arrayLinesCsv = csvString.Split('\n');
