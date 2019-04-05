@@ -75,7 +75,7 @@ string csvSerialized = CsvSerializer<ExampleModel>.Serialize(list);
 
 >**2my2;some3;\/any yna\/;1my1;57;Texts with comments to rich all tests;**
 
-#### 1.5) Pear attention: if you want to save '*.csv*' file, using Enconding UTF8, according [CSV specifications](https://en.wikipedia.org/wiki/Comma-separated_values):
+#### 1.5) Pear attention: if you want to save '*.csv*' file, using Encoding UTF8, according [CSV specifications](https://en.wikipedia.org/wiki/Comma-separated_values):
 ```cs
 File.WriteAllText(@"\\path\to\save\file.csv", csvSerialized, Encoding.UTF8);
 ```
