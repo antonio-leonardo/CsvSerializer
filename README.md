@@ -98,3 +98,7 @@ DataTable dtDeserialized = CsvSerializer.Deserialize(csvToDeserialize);
 ExampleModel[] arrayCollection = CsvSerializer<ExampleModel>.Deserialize(csv).ToArray();
 List<ExampleModel> listCollection = CsvSerializer<ExampleModel>.Deserialize(csv).ToList();
 ```
+----------------------
+## License
+
+[View MIT license](https://github.com/antonio-leonardo/CsvSerializer/blob/master/LICENSE)
