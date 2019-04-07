@@ -71,13 +71,15 @@ string csvSerialized = CsvSerializer<ExampleModel>.Serialize(list);
 ```
 
 #### 1.4) This is the result of the string bulk:
->**My Property 2;Some Property;Any Property;My Property 1;Capacity Property;Property comments change order;**
+```csv
+My Property 2;Some Property;Any Property;My Property 1;Capacity Property;Property comments change order;
 
->**my 2;some 1;any 1;my 1;20;Comments to change and or texts...;**
+my 2;some 1;any 1;my 1;20;Comments to change and or texts...;
 
->**22 my;2 some 1;any yna;11 my;45;Another comment to change contents!;**
+22 my;2 some 1;any yna;11 my;45;Another comment to change contents!;
 
->**2my2;some3;\/any yna\/;1my1;57;Texts with comments to rich all tests;**
+2my2;some3;\/any yna\/;1my1;57;Texts with comments to rich all tests;
+```
 
 #### 1.5) Pear attention: if you want to save '*.csv*' file, using Encoding UTF8, according [CSV specifications](https://en.wikipedia.org/wiki/Comma-separated_values):
 ```cs
