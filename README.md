@@ -1,8 +1,9 @@
 # C# CSV Serializer
 
-This C# class giving a simplest way with performance serializer functionalities to manipulate CSV strings; several test cases were executed in order to treat the particularities of a sequence of CSV characters; in this publication, is considered stable, it is implemented in productive environments with large scale of data generated or consumed in CSV daily; but, it is not ruling out possible faults, if it occurs, you can tell me by exposing the test case used.
+This C# class giving a simplest way with performance serializer functionalities to manipulate CSV strings; several test cases were executed in order to treat the particularities of a sequence of CSV characters; in this publication, is considered stable, it is implemented in productive environments with large scale of data generated or consumed in CSV daily.
 
 Specifications: This 'CsvSerializer' class enjoy best pratices of Design Patterns result in a powerful CSV serialization and deserialization functionality, giving to Developer other data sctructure options like [DataTable](https://docs.microsoft.com/en-us/dotnet/api/system.data.datatable) object or a custom C# Plain Old CLR Object (Entity class) with capacity to define column name and order exihbition.
+Both methods 'Serialize' and 'Deserialize' contains on important argument named "csvSeparator" to gives flexible generation of CSV.
 
 Bellow are examples of using the 'CsvSerializer':
 
@@ -67,7 +68,7 @@ list.Add(new ExampleModel()
 
 #### 1.3) Execute Serialize method, and *Voilà*!
 ```cs
-string csvSerialized = CsvSerializer<ExampleModel>.Serialize(list);
+string csvSerialized = CsvSerializer<ExampleModel>.Serialize(';', list);
 ```
 
 #### 1.4) This is the result of the string bulk:
@@ -96,13 +97,13 @@ string csvToDeserialize = File.ReadAllText(@"\\path\to\read\file.csv");
 
 #### 2.2) And, if dont know the data column arrange, may populate a DataTable objet:
 ```cs
-DataTable dtDeserialized = CsvSerializer.Deserialize(csvToDeserialize);
+DataTable dtDeserialized = CsvSerializer.Deserialize(';', csvToDeserialize);
 ```
 
 #### 2.2) Or populate a collection of Entity class (like array or list):
 ```cs
-ExampleModel[] arrayCollection = CsvSerializer<ExampleModel>.Deserialize(csvToDeserialize).ToArray();
-List<ExampleModel> listCollection = CsvSerializer<ExampleModel>.Deserialize(csvToDeserialize).ToList();
+ExampleModel[] arrayCollection = CsvSerializer<ExampleModel>.Deserialize(';', csvToDeserialize).ToArray();
+List<ExampleModel> listCollection = CsvSerializer<ExampleModel>.Deserialize(';', csvToDeserialize).ToList();
 ```
 ----------------------
 ## License

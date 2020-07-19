@@ -17,6 +17,26 @@ namespace CsvSerialization
         where TEntity : class
     {
         /// <summary>
+        /// 
+        /// </summary>
+        protected internal readonly char _csvSeparator;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected internal static string CsvSeparator { get; private set; }
+
+        /// <summary>
+        /// /
+        /// </summary>
+        /// <param name="csvSeparator"></param>
+        public CsvSerializerAbstraction(char csvSeparator)
+        {
+            this._csvSeparator = csvSeparator;
+            CsvSeparator = this._csvSeparator.ToString();
+        }
+
+        /// <summary>
         /// Abstraction of method to Serialize routine
         /// </summary>
         /// <param name="collection"></param>
@@ -39,7 +59,7 @@ namespace CsvSerialization
         /// <summary>
         /// This class only be instanciable like a private behavior
         /// </summary>
-        private CsvSerializer()
+        private CsvSerializer(char csvSeparator) : base(csvSeparator)
         {
         }
 
@@ -50,7 +70,7 @@ namespace CsvSerialization
         /// </summary>
         /// <param name="collection">Datatable with data array to be serialized</param>
         /// <returns>System.String</returns>
-        public static string Serialize(DataTable collection)
+        public static string Serialize(char csvSeparator, DataTable collection)
         {
             StringBuilder sbColumns = new StringBuilder();
 
@@ -58,14 +78,14 @@ namespace CsvSerialization
             {
                 if (i == collection.Columns.Count - 1)
                 {
-                    sbColumns.AppendLine(collection.Columns[i].ColumnName + ";");
+                    sbColumns.AppendLine(collection.Columns[i].ColumnName + csvSeparator);
                 }
                 else
                 {
-                    sbColumns.Append(collection.Columns[i].ColumnName).Append(";");
+                    sbColumns.Append(collection.Columns[i].ColumnName).Append(csvSeparator);
                 }
             }
-            return sbColumns.ToString() + (new CsvSerializer()).CustomSerialize(collection.Rows.Cast<DataRow>().ToArray());
+            return sbColumns.ToString() + (new CsvSerializer(csvSeparator)).CustomSerialize(collection.Rows.Cast<DataRow>().ToArray());
         }
 
         /// <summary>
@@ -84,28 +104,28 @@ namespace CsvSerialization
                     string data = null;
                     if (columns[j].DataType == typeof(string))
                     {
-                        data = collection[i][columns[j]].ToString().Replace("\r", "").Replace("\n", "");
+                        data = collection[i][columns[j]].ToString().Replace("\r", "").Replace("\n", "").Replace(CsvSeparator, " ");
                     }
                     if (j == columns.Count - 1)
                     {
                         if (!string.IsNullOrWhiteSpace(data))
                         {
-                            sbRows.AppendLine(data + ";");
+                            sbRows.AppendLine(data + CsvSeparator);
                         }
                         else
                         {
-                            sbRows.AppendLine((collection[i][columns[j]]) + ";");
+                            sbRows.AppendLine((collection[i][columns[j]]) + CsvSeparator);
                         }
                     }
                     else
                     {
                         if (!string.IsNullOrWhiteSpace(data))
                         {
-                            sbRows.Append(data).Append(";");
+                            sbRows.Append(data).Append(CsvSeparator);
                         }
                         else
                         {
-                            sbRows.Append((collection[i][columns[j]])).Append(";");
+                            sbRows.Append((collection[i][columns[j]])).Append(CsvSeparator);
                         }
                     }
                 }
@@ -122,9 +142,9 @@ namespace CsvSerialization
         /// </summary>
         /// <param name="csvString"></param>
         /// <returns>System.Data.DataTable</returns>
-        public static DataTable Deserialize(string csvString)
+        public static DataTable Deserialize(char csvSeparator, string csvString)
         {
-            return (new CsvSerializer()).CustomDeserialize(csvString).ToArray().CopyToDataTable<DataRow>();
+            return (new CsvSerializer(csvSeparator)).CustomDeserialize(csvString).ToArray().CopyToDataTable<DataRow>();
         }
 
         /// <summary>
@@ -136,7 +156,7 @@ namespace CsvSerialization
         {
             DataTable dt = new DataTable();
             string[] csvLines = csvString.Split('\n');
-            string[] columnsName = csvLines[0].Split(';');
+            string[] columnsName = csvLines[0].Split(base._csvSeparator);
             for (int i = 0; i < columnsName.Length - 1; i++)
             {
                 dt.Columns.Add(columnsName[i]);
@@ -158,8 +178,8 @@ namespace CsvSerialization
                 if (i > 0)
                 {
                     dr = dt.NewRow();
-                    string[] columnsName = csvLines[0].Split(';');
-                    string[] columnsValue = csvLines[i].Split(';');
+                    string[] columnsName = csvLines[0].Split(base._csvSeparator);
+                    string[] columnsValue = csvLines[i].Split(base._csvSeparator);
                     for (int j = 0; j < columnsValue.Length - 1; j++)
                     {
                         dr[columnsName[j]] = columnsValue[j];
@@ -182,7 +202,7 @@ namespace CsvSerialization
         /// <summary>
         /// 
         /// </summary>
-        private CsvSerializer()
+        private CsvSerializer(char csvSeparator) : base(csvSeparator)
         {
         }
 
@@ -194,9 +214,9 @@ namespace CsvSerialization
         /// <typeparam name="TEntity">Generic that represents the entity collection</typeparam>
         /// <param name="collection">Datatable with data array to be serialized</param>
         /// <returns>System.String</returns>
-        public static string Serialize(List<TEntity> collection)
+        public static string Serialize(char csvSeparator, List<TEntity> collection)
         {
-            return Serialize(collection.ToArray());
+            return Serialize(csvSeparator, collection.ToArray());
         }
 
         /// <summary>
@@ -204,9 +224,9 @@ namespace CsvSerialization
         /// </summary>
         /// <param name="collection">Array of DataRows</param>
         /// <returns>System.String</returns>
-        public static string Serialize(params TEntity[] collection)
+        public static string Serialize(char csvSeparator, params TEntity[] collection)
         {
-            return (new CsvSerializer<TEntity>()).CustomSerialize(collection);
+            return (new CsvSerializer<TEntity>(csvSeparator)).CustomSerialize(collection);
         }
 
         /// <summary>
@@ -219,7 +239,7 @@ namespace CsvSerialization
             StringBuilder sbColumns = new StringBuilder();
             StringBuilder sbRows = new StringBuilder();
 
-            KeyValuePair<PropertyInfo, DataMemberAttribute>[] pairs = this.GetElementsResult((typeof(TEntity))).ToArray();
+            KeyValuePair<PropertyInfo, DataMemberAttribute>[] pairs = typeof(TEntity).GetElementsResult().ToArray();
 
             this.MountCsvColumns(ref sbColumns, pairs);
 
@@ -242,11 +262,11 @@ namespace CsvSerialization
             {
                 if (i == pairs.Length - 1)
                 {
-                    sbColumns.AppendLine(pairs[i].Value.Name + ";");
+                    sbColumns.AppendLine(pairs[i].Value.Name + CsvSeparator);
                 }
                 else
                 {
-                    sbColumns.Append(pairs[i].Value.Name).Append(";");
+                    sbColumns.Append(pairs[i].Value.Name).Append(CsvSeparator);
                 }
             }
         }
@@ -264,15 +284,15 @@ namespace CsvSerialization
             {
                 string result = (null != obj.GetType().GetProperty(pairs[i].Key.Name).GetValue(obj, null)) ?
                         Convert.ChangeType(obj.GetType().GetProperty(pairs[i].Key.Name).GetValue(obj, null), Type.GetTypeCode(pairs[i].Key.PropertyType)).ToString() : string.Empty;
-                result = result.Replace("\r", "").Replace("\n", "");
+                result = result.Replace("\r", "").Replace("\n", "").Replace(CsvSeparator, " ");
                 if (i == pairs.Length - 1)
                 {
 
-                    sbRows.AppendLine(result + ";");
+                    sbRows.AppendLine(result + CsvSeparator);
                 }
                 else
                 {
-                    sbRows.Append(result).Append(";");
+                    sbRows.Append(result).Append(CsvSeparator);
                 }
             }
         }
@@ -330,61 +350,6 @@ namespace CsvSerialization
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Capture the DataMember Attribute object collection by properties iteraction
-        /// </summary>
-        /// <typeparam name="TEntity">Defined generic</typeparam>
-        /// <param name="type">Type collected from generic type</param>
-        /// <returns>KeyValuePair Collection</returns>
-        private IEnumerable<KeyValuePair<int, DataMemberAttribute>> GetAttributesResult(Type type)
-        {
-            PropertyInfo[] properties = type.GetProperties();
-            for (int i = 0; i < properties.Length; i++)
-            {
-                DataMemberAttribute att = null;
-                try
-                {
-                    att = properties[i].GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute;
-                    if (string.IsNullOrWhiteSpace(att.Name))
-                    {
-                        att = new DataMemberAttribute()
-                        {
-                            Name = properties[i].Name,
-                            Order = att.Order
-                        };
-                    }
-                }
-                catch
-                {
-                    att = new DataMemberAttribute()
-                    {
-                        Name = properties[i].Name,
-                        Order = i
-                    };
-                }
-                yield return new KeyValuePair<int, DataMemberAttribute>(i, att);
-            }
-        }
-
-        /// <summary>
-        /// Capture the properties collection by properties iteraction
-        /// </summary>
-        /// <typeparam name="TEntity">Defined generic</typeparam>
-        /// <param name="type">Type collected from generic type</param>
-        /// <returns>KeyValuePair Collection</returns>
-        private IEnumerable<KeyValuePair<PropertyInfo, DataMemberAttribute>> GetElementsResult(Type type)
-        {
-            //TO DO: Alterar para internal
-            List<string> adquiredPros = new List<string>();
-            List<KeyValuePair<int, DataMemberAttribute>> ordered = this.GetAttributesResult(type).OrderBy(x => x.Value.Order).ToList();
-            PropertyInfo[] properties = type.GetProperties();
-
-            foreach (KeyValuePair<int, DataMemberAttribute> pair in ordered)
-            {
-                yield return new KeyValuePair<PropertyInfo, DataMemberAttribute>(properties[pair.Key], pair.Value);
-            }
-        }
-
         #endregion
 
         #region ' Deserialize '
@@ -394,9 +359,9 @@ namespace CsvSerialization
         /// </summary>
         /// <param name="csvString">string with read CSV</param>
         /// <returns>Collection of Generic</returns>
-        public static IEnumerable<TEntity> Deserialize(string csvString)
+        public static IEnumerable<TEntity> Deserialize(char csvSeparator, string csvString)
         {
-            return (new CsvSerializer<TEntity>()).CustomDeserialize(csvString);
+            return (new CsvSerializer<TEntity>(csvSeparator)).CustomDeserialize(csvString);
         }
 
         /// <summary>
@@ -408,13 +373,13 @@ namespace CsvSerialization
         protected override IEnumerable<TEntity> CustomDeserialize(string csvString)
         {
             string[] arrayLinesCsv = csvString.Split('\n');
-            string[] columnsName = arrayLinesCsv[0].Split(';');
+            string[] columnsName = arrayLinesCsv[0].Split(base._csvSeparator);
             Type tp = typeof(TEntity);
             PropertyInfo[] props = tp.GetProperties();
             for (int i = 1; i < arrayLinesCsv.Length - 1; i++)
             {
                 object instance = Activator.CreateInstance(tp);
-                string[] columnsValue = arrayLinesCsv[i].Split(';');
+                string[] columnsValue = arrayLinesCsv[i].Split(base._csvSeparator);
                 for (int j = 0; j < columnsValue.Length - 1; j++)
                 {
                     PropertyInfo prop = null;
